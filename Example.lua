@@ -21,7 +21,7 @@ local Tabs = {
 local Options = VanHub.Options
 
 do
-    Fluent:Notify({
+    VanHub:Notify({
         Title = "Notification",
         Content = "This is a notification",
         SubContent = "SubContent", -- Optional
