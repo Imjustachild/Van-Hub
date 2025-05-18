@@ -1,10 +1,10 @@
-local VanHub = loadstring(game:HttpGet("https://github.com/NgKhangg/VanHub/main/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/NgKhangg/VanHub/main/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/NgKhangg/VanHub/main/Addons/InterfaceManager.lua"))()
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "Van Hub ",
-    SubTitle = "by NgKhangg",
+    Title = "Fluent " .. Fluent.Version,
+    SubTitle = "by dawid",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
@@ -18,10 +18,10 @@ local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
-local Options = VanHub.Options
+local Options = Fluent.Options
 
 do
-    VanHub:Notify({
+    Fluent:Notify({
         Title = "Notification",
         Content = "This is a notification",
         SubContent = "SubContent", -- Optional
@@ -227,8 +227,8 @@ end
 -- InterfaceManager (Allows you to have a interface managment system)
 
 -- Hand the library over to our managers
-SaveManager:SetLibrary(VanHub)
-InterfaceManager:SetLibrary(VanHub)
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
 
 -- Ignore keys that are used by ThemeManager.
 -- (we dont want configs to save themes, do we?)
@@ -240,8 +240,8 @@ SaveManager:SetIgnoreIndexes({})
 -- use case for doing it this way:
 -- a script hub could have themes in a global folder
 -- and game configs in a separate folder per game
-InterfaceManager:SetFolder("VanScriptHub")
-SaveManager:SetFolder("VanScriptHub")
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
 
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
@@ -249,8 +249,8 @@ SaveManager:BuildConfigSection(Tabs.Settings)
 
 Window:SelectTab(1)
 
-VanHub:Notify({
-    Title = "VanHub",
+Fluent:Notify({
+    Title = "Fluent",
     Content = "The script has been loaded.",
     Duration = 8
 })
