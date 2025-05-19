@@ -3,15 +3,15 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "Van Hub   ",
-    SubTitle = "by NgKhangg",
+    Title = "NhanHub UI    ",
+    SubTitle = "by Nhan",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,
     Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
 
---Fluent provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "" })
@@ -21,110 +21,63 @@ local Options = Fluent.Options
 
 do
     Fluent:Notify({
-        Title = "Notification",
-        Content = "This is a notification",
-        SubContent = "SubContent", -- Optional
-        Duration = 5 -- Set to nil to make the notification not disappear
+        Title = "Thông báo",
+        Content = "NhanHub đã hoạt động!",
+        Duration = 5
     })
-
-
-
-    local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Toggle", Default = false })
-
-
-    local Keybind = Tabs.Main:AddKeybind("Keybind", {
-        Title = "KeyBind",
-        Mode = "Toggle", -- Always, Toggle, Hold
-        Default = "LeftControl", -- String as the name of the keybind (MB1, MB2 for mouse buttons)
-
-        -- Occurs when the keybind is clicked, Value is `true`/`false`
-        Callback = function(Value)
-            print("Keybind clicked!", Value)
-        end,
-
-        -- Occurs when the keybind itself is changed, `New` is a KeyCode Enum OR a UserInputType Enum
-        ChangedCallback = function(New)
-            print("Keybind changed!", New)
-        end
-    })
-
-    -- OnClick is only fired when you press the keybind and the mode is Toggle
-    -- Otherwise, you will have to use Keybind:GetState()
-    Keybind:OnClick(function()
-        print("Keybind clicked:", Keybind:GetState())
-    end)
-
-    Keybind:OnChanged(function()
-        print("Keybind changed:", Keybind.Value)
-    end)
-
-    task.spawn(function()
-        while true do
-            wait(1)
-
-            -- example for checking if a keybind is being pressed
-            local state = Keybind:GetState()
-            if state then
-                print("Keybind is being held down")
-            end
-
-            if Fluent.Unloaded then break end
-        end
-    end)
-
-    Keybind:SetValue("MB2", "Toggle") -- Sets keybind to MB2, mode to Hold
-
-
-    local Input = Tabs.Main:AddInput("Input", {
-        Title = "Input",
-        Default = "Default",
-        Placeholder = "Placeholder",
-        Numeric = false, -- Only allows numbers
-        Finished = false, -- Only calls callback when you press enter
-        Callback = function(Value)
-            print("Input changed:", Value)
-        end
-    })
-
-    Input:OnChanged(function()
-        print("Input updated:", Input.Value)
-    end)
 end
-
-
--- Addons:
--- SaveManager (Allows you to have a configuration system)
--- InterfaceManager (Allows you to have a interface managment system)
-
--- Hand the library over to our managers
+-- Config và Settings
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 
--- Ignore keys that are used by ThemeManager.
--- (we dont want configs to save themes, do we?)
 SaveManager:IgnoreThemeSettings()
-
--- You can add indexes of elements the save manager should ignore
 SaveManager:SetIgnoreIndexes({})
 
--- use case for doing it this way:
--- a script hub could have themes in a global folder
--- and game configs in a separate folder per game
-InterfaceManager:SetFolder("FluentScriptHub")
-SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:SetFolder("NhanHub")
+SaveManager:SetFolder("NhanHub/Config")
 
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
+-- Tab Teleport
+
+
+
+-- Tab Farm
+local AutoFarmGroup = Tabs.Main:AddSection("Auto Farm")
+local autofarmThread -- Biến lưu luồng farm để dừng khi cần
+
+Tabs.Main:AddToggle("AutoFarmToggle", {
+    Title = "Auto Click (Fast Click)",
+    Default = false
+}):OnChanged(function(Value)
+    _G.auto = Value
+    if Value then
+        print("Auto Click Started")
+
+        autofarmThread = task.spawn(function()
+            while _G.auto do
+                pcall(function()
+                    local rs = game:GetService("ReplicatedStorage")
+                    local remote = rs:WaitForChild("Packages"):WaitForChild("Knit")
+                        :WaitForChild("Services"):WaitForChild("ClickService")
+                        :WaitForChild("RF"):WaitForChild("Click")
+                    remote:InvokeServer()
+                end)
+                task.wait(0.1)
+            end
+        end)
+
+    else
+        print("Auto Farm Stopped")
+    end
+end)
 
 Window:SelectTab(1)
 
 Fluent:Notify({
-    Title = "Fluent",
+    Title = "NhanHub",
     Content = "The script has been loaded.",
-    Duration = 8
+    Duration = 5
 })
 
--- You can use the SaveManager:LoadAutoloadConfig() to load a config
--- which has been marked to be one that auto loads!
 SaveManager:LoadAutoloadConfig()
