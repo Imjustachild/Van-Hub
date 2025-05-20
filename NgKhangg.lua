@@ -1,6 +1,4 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
     Title = "Van Hub  (Steve One Piece)",
@@ -139,7 +137,7 @@ local function TweenTo(position)
 
     local tween = TweenService:Create(
         hrp,
-        TweenInfo.new(1, Enum.EasingStyle.Linear),
+        TweenInfo.new(2, Enum.EasingStyle.Linear),
         {CFrame = CFrame.new(position + Vector3.new(0, 3, 0))} -- bay lên 3 đơn vị
     )
     tween:Play()
@@ -158,15 +156,39 @@ Tabs.Teleport:AddButton({
     end
 })
 
--- Config
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("NhanHub")
-SaveManager:SetFolder("NhanHub/Config")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
+local isFastMode = false
+
+Tabs.Settings:AddButton({
+    Title = "Fast Mode (Reduce Lag)",
+    Callback = function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Material = Enum.Material.SmoothPlastic
+                v.Reflectance = 0
+                v.CastShadow = false
+            elseif v:IsA("Decal") or v:IsA("Texture") then
+                v:Destroy()
+            end
+        end
+
+        local lighting = game:GetService("Lighting")
+        lighting.GlobalShadows = false
+        lighting.FogEnd = 1e10
+        lighting.Brightness = 1
+        lighting.EnvironmentDiffuseScale = 0
+        lighting.EnvironmentSpecularScale = 0
+        lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+        Fluent:Notify({
+            Title = "Fast Mode",
+            Content = "Lag Reduction",
+            Duration = 4
+        })
+    end
+})
 
 Window:SelectTab(1)
 
@@ -175,5 +197,3 @@ Fluent:Notify({
     Content = "The script has been loaded.",
     Duration = 5
 })
-
-SaveManager:LoadAutoloadConfig()
